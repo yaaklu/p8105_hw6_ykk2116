@@ -1,0 +1,13 @@
+---
+title: "P8105_hw6_ykk2116"
+author: "Yaa Klu"
+date: "11/26/2018"
+output: github_document
+---
+
+
+```{r}
+library(tidyverse)
+library(modelr)
+```
+

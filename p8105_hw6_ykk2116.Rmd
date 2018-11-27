@@ -87,3 +87,67 @@ ggplot(cities_logistics, aes(x = city_state, y = OR )) +
 ```
 
 
+Problem 2
+```{r}
+child_df = read_csv("./data/birthweight.csv") %>% 
+  mutate(babysex = as.factor(babysex),
+         frace = as.factor(frace),
+         mrace = as.factor(mrace),
+         malform = as.factor(malform))
+filter_all(child_df, any_vars(is.na(.))) 
+sum(is.na(child_df))
+```
+
+
+proposed linear regression
+Birthweight is usually associated with gestational age
+Also,the models would be ajusted for some factors or variables including; baby's sex, mother's age at delivry, mother's race, father's race, mother's weight gain during pregnancy,  and average number of cigarette smoked per day during pregnancy. 
+
+```{r}
+proposed_fit = lm(bwt ~ gaweeks + babysex + momage + mrace + frace + wtgain +  smoken, data = child_df)
+
+proposed_fit %>% 
+  broom::tidy() 
+```
+
+
+
+```{r}
+child_df %>% 
+  modelr::add_predictions(proposed_fit) %>% 
+  modelr::add_residuals(proposed_fit) %>% 
+  ggplot(aes(x = pred, y = resid)) + geom_point() +
+  labs(x = "Predicted value", 
+       y = "Residual")
+```
+
+
+2 other models
+```{r}
+main_effect_fit = lm(bwt ~ blength + gaweeks, data = child_df)
+
+interation_fit = lm(bwt ~ bhead * blength *babysex, data = child_df)
+
+
+```
+
+
+Cross validation
+
+```{r}
+set.seed(56)
+cross_vd =
+  crossv_mc(child_df, 100) %>% 
+  mutate(train = map(train, as_tibble),
+         test = map(test, as_tibble))
+```
+
+
+
+```{r}
+
+
+
+
+```
+

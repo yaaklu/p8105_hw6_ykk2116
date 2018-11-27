@@ -11,7 +11,7 @@ library(tidyverse)
 library(modelr)
 ```
 
-
+Problem 1
 
 ```{r}
 homicide = read_csv("https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv", col_names = TRUE) %>% 
@@ -49,4 +49,41 @@ baltimore_logistic %>% broom::tidy() %>%
 
 
 ```
+
+
+```{r}
+cities_logistics = homicide %>% 
+  #Selecting only the variables needed
+  select(city_state, solved, victim_age, victim_sex, colpsd_victim_race) %>%
+  #Making listcolumns to use for the iteration
+  group_by(city_state) %>% 
+  nest() %>% 
+  #Using maps to iterate the glm and tidy functions
+  mutate(models = map(.x = data, ~ glm(solved ~ victim_sex + colpsd_victim_race + victim_age, 
+                                      family = binomial, data = .x)),
+         models = map(models, broom::tidy)) %>% 
+  select(-data) %>% unnest() %>% 
+  filter(term == "colpsd_victim_racenon-white") %>% 
+  mutate(OR = exp(estimate),
+  # Calculating the 95% confidence intervals
+         lower_95_ci = exp(estimate - (1.96*std.error)),
+         upper_95_ci = exp(estimate + (1.96*std.error))) %>% 
+  select(city_state, OR, lower_95_ci, upper_95_ci) %>% 
+  #Organizing cities according to estimated OR. From lowest to highest
+  mutate(city_state = reorder(city_state, OR))
+```
+
+Plot
+```{r}
+ggplot(cities_logistics, aes(x = city_state, y = OR )) + 
+  geom_point() + 
+  geom_errorbar(aes(ymin = lower_95_ci, ymax = upper_95_ci)) + 
+  coord_flip() +
+  geom_hline(aes(yintercept = 1.00), linetype = "dashed", color = "red") + 
+  labs(
+    y = "OR (95% CI)",
+    x = "City, State"
+  )
+```
+
 

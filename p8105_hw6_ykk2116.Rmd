@@ -31,5 +31,22 @@ homicide = read_csv("https://raw.githubusercontent.com/washingtonpost/data-homic
 baltimore = homicide %>% 
   filter(city_state == "Baltimore, MD")
 
+baltimore_logistic = glm(solved ~ victim_age + victim_sex + colpsd_victim_race, data = baltimore, family = binomial())
+
+```
+
+
+```{r}
+
+baltimore_logistic %>% broom::tidy() %>% 
+  janitor::clean_names() %>% 
+  mutate(OR = exp(estimate),
+         lower_95_ci = exp(estimate - (1.96 * std_error)),
+         upper_95_ci = exp(estimate + (1.96 * std_error))) %>% 
+  filter(term == "colpsd_victim_racenon-white") %>% 
+  select(OR, lower_95_ci, upper_95_ci) %>% 
+  knitr::kable(digits = 2)
+
+
 ```
 

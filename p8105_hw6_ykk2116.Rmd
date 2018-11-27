@@ -11,3 +11,24 @@ library(tidyverse)
 library(modelr)
 ```
 
+
+The Washington Post has gathered data on homicides in 50 large U.S. cities and made the data available through a GitHub repository here. You can read their accompanying article here.
+
+Create a city_state variable (e.g. “Baltimore, MD”), and a binary variable indicating whether the homicide is solved. Omit cities Dallas, TX; Phoenix, AZ; and Kansas City, MO – these don’t report victim race. Also omit Tulsa, AL – this is a data entry mistake. Modifiy victim_race to have categories white and non-white, with white as the reference category. Be sure that victim_age is numeric.
+
+
+```{r}
+homicide_df = read_csv("https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv", col_names = TRUE) %>% 
+  mutate(city_state = str_c(city, ",", " ", state),
+         solved = if_else(disposition == "Closed by arrest", "resolved", "unresolved"),
+         solved = fct_relevel(solved, "unresolved"),
+         victim_race = tolower(victim_race),
+         colpsd_victim_race = fct_collapse(victim_race, "non-white" = c("asian","black", "hispanic", "other", "unknown")),
+         colpsd_victim_race = fct_relevel(colpsd_victim_race, "white"),
+         victim_age = as.numeric(victim_age)) %>% 
+  filter(!(city_state %in% c("Dallas, TX", "Phoenix, AZ", "Kansas City, MO", "Tulsa, AL")))
+
+
+
+```
+

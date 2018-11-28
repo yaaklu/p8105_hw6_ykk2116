@@ -111,7 +111,10 @@ ggplot(cities_logistics, aes(x = city_state, y = OR )) +
 The graph above shows that the odds ratios for most of the cities were below 1.0. However, for Durham, NC is looked as if it was 1.0 and for Tampa, Fl and Brimingham, AL, the odds ratios were greater than 1.0. The confidence intervals were wide for most of them and contained 1.0, indicating statistical isginficance. Regardless, it shows that in most of the cities, it is highly likely that the odds of a homicide being solved is lower for victims who were not Whites, compared to those who were Whites.
 
 
+
 ### Problem 2
+
+Loading in dataset and data wrangling.
 
 ```{r}
 child_df = read_csv("./data/birthweight.csv") %>% 
@@ -123,10 +126,16 @@ filter_all(child_df, any_vars(is.na(.)))
 sum(is.na(child_df))
 ```
 
+After data wrangling we see that there is not missing observations. 
+The outcome of interest here is birth weight, which is a continuous variable.
+I choose a linear regression for this analysis because of the continuous variable.
 
-proposed linear regression
-Birthweight is usually associated with gestational age
-Also,the models would be ajusted for some factors or variables including; baby's sex, mother's age at delivry, mother's race, father's race, mother's weight gain during pregnancy,  and average number of cigarette smoked per day during pregnancy. 
+From prior knowledge (literature), I would like to look at a linear regression model using birth weight as an outcome and gestational age as a predictor. Birthweight is usually associated with gestational age. In the same model, I would adjust for the following variables including; baby's sex, mother's age at delivry, mother's race, father's race, mother's weight gain during pregnancy, and average number of cigarette smoked per day during pregnancy. 
+
+
+Distribution of the outcome and predictor variables
+
+
 
 ```{r}
 proposed_fit = lm(bwt ~ gaweeks + babysex + momage + mrace + frace + wtgain +  smoken, data = child_df)

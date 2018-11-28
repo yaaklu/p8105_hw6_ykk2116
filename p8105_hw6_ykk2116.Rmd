@@ -5,13 +5,15 @@ date: "11/26/2018"
 output: github_document
 ---
 
+**Loading packages**
 
 ```{r}
 library(tidyverse)
 library(modelr)
 ```
 
-Problem 1
+
+**Problem 1**
 
 ```{r}
 homicide = read_csv("https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv", col_names = TRUE) %>% 
@@ -87,7 +89,8 @@ ggplot(cities_logistics, aes(x = city_state, y = OR )) +
 ```
 
 
-Problem 2
+**Problem 2**
+
 ```{r}
 child_df = read_csv("./data/birthweight.csv") %>% 
   mutate(babysex = as.factor(babysex),
@@ -152,5 +155,27 @@ cross_validation = cross_vd %>%
   mutate(rmse_main_effect_fit = map2_dbl(main_effect_fit, test, ~ rmse(model = .x, data = .y)),
          rmse_interation_fit = map2_dbl(interation_fit, test, ~ rmse(model = .x, data = .y)),
          rmse_proposed_fit = map2_dbl(proposed_fit, test, ~ rmse(model = .x, data = .y)))
+```
+
+
+```{r}
+cross_validation %>% 
+  select(starts_with("rmse")) %>% 
+  gather(key = model, value = rmse) %>% 
+   mutate(model = str_replace(model, "rmse_", ""),
+         model = fct_inorder(model)) %>% 
+  ggplot(aes(x = model, y = rmse)) + geom_violin()
+```
+
+
+
+```{r}
+cross_validation %>% 
+  select(starts_with("rmse")) %>% 
+  gather(key = model, value = rmse) %>% 
+  group_by(model) %>% 
+  summarize(mean_rmse = mean(rmse)) %>% 
+  arrange(mean_rmse) %>% 
+  knitr::kable(digits = 2)
 ```
 

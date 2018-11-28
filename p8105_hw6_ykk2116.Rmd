@@ -145,9 +145,12 @@ cross_vd =
 
 
 ```{r}
-
-
-
-
+cross_validation = cross_vd %>% 
+  mutate(main_effect_fit = map(train, ~ lm(bwt ~ blength + gaweeks, data = .x)),
+         interation_fit = map(train, ~ lm(bwt ~ bhead * blength *babysex, data = .x)),
+         proposed_fit = map(train, ~ lm(bwt ~ gaweeks + babysex + momage + mrace + frace + wtgain +  smoken, data = .x))) %>% 
+  mutate(rmse_main_effect_fit = map2_dbl(main_effect_fit, test, ~ rmse(model = .x, data = .y)),
+         rmse_interation_fit = map2_dbl(interation_fit, test, ~ rmse(model = .x, data = .y)),
+         rmse_proposed_fit = map2_dbl(proposed_fit, test, ~ rmse(model = .x, data = .y)))
 ```
 

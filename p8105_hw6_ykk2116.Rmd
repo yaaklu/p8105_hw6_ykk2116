@@ -13,7 +13,13 @@ library(modelr)
 ```
 
 
-**Problem 1**
+### Problem 1
+
+Reading of data and data wrangling
+The variable city_state depicts, cities and the states they are in. for example, New York, NY. The victim's race was recategorized into non-white and whites (reference).
+Victim's age was also changed into a numeric variable.
+Lastly, a an indication of whethwe a homicide is solved or not was created.
+
 
 ```{r}
 homicide = read_csv("https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv", col_names = TRUE) %>% 
@@ -89,7 +95,7 @@ ggplot(cities_logistics, aes(x = city_state, y = OR )) +
 ```
 
 
-**Problem 2**
+### Problem 2
 
 ```{r}
 child_df = read_csv("./data/birthweight.csv") %>% 

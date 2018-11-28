@@ -135,7 +135,22 @@ From prior knowledge (literature), I would like to look at a linear regression m
 
 Distribution of the outcome and predictor variables
 
+Gestational age
+```{r}
+ggplot(child_df, aes(x = gaweeks)) + geom_histogram()
+```
 
+
+Birth weight
+```{r}
+ggplot(child_df, aes(x = bwt)) + geom_histogram()
+```
+
+Birth weight looks like a normal distribution whiles gestational age shows somewhat a left skew.
+
+
+
+Fitting linear model
 
 ```{r}
 proposed_fit = lm(bwt ~ gaweeks + babysex + momage + mrace + frace + wtgain +  smoken, data = child_df)
@@ -156,13 +171,12 @@ child_df %>%
 ```
 
 
-2 other models
+Two other models
+
 ```{r}
 main_effect_fit = lm(bwt ~ blength + gaweeks, data = child_df)
 
 interation_fit = lm(bwt ~ bhead * blength *babysex, data = child_df)
-
-
 ```
 
 
@@ -177,7 +191,6 @@ cross_vd =
 ```
 
 
-
 ```{r}
 cross_validation = cross_vd %>% 
   mutate(main_effect_fit = map(train, ~ lm(bwt ~ blength + gaweeks, data = .x)),
@@ -188,6 +201,8 @@ cross_validation = cross_vd %>%
          rmse_proposed_fit = map2_dbl(proposed_fit, test, ~ rmse(model = .x, data = .y)))
 ```
 
+
+A violn plot comparing the rmse of the 3 models 
 
 ```{r}
 cross_validation %>% 
@@ -200,6 +215,8 @@ cross_validation %>%
 
 
 
+A table showing the mean_rmse of the 3 models
+
 ```{r}
 cross_validation %>% 
   select(starts_with("rmse")) %>% 
@@ -210,3 +227,5 @@ cross_validation %>%
   knitr::kable(digits = 2)
 ```
 
+
+The output from the graph and table shows that the best model is the model that contains the interaction term. My proposed fit was the worst model (sad)
